@@ -71,7 +71,7 @@ public class ProxyPool implements Processor {
 	}
 
 	/***
-	 * 打开原始代理连接，并执行，默认延迟0秒
+	 * 打开原始代理连接，并执行请求，默认延迟0秒
 	 * 
 	 * @param conn
 	 * @return
@@ -82,7 +82,7 @@ public class ProxyPool implements Processor {
 	}
 
 	/***
-	 * 打开原始代理连接，并执行
+	 * 打开原始代理连接，并执行请求
 	 * 
 	 * @param conn
 	 * @param sleepTime
@@ -114,7 +114,7 @@ public class ProxyPool implements Processor {
 	}
 
 	/***
-	 * 打开使用过的代理连接，并执行，默认延迟0秒
+	 * 打开使用过的代理连接，并执行请求，默认延迟0秒
 	 * 
 	 * @param conn
 	 * @param score
@@ -129,7 +129,7 @@ public class ProxyPool implements Processor {
 	}
 
 	/***
-	 * 打开使用过的代理连接，并执行
+	 * 打开使用过的代理连接，并执行请求
 	 * 
 	 * @param conn
 	 * @param sleepTime
@@ -169,7 +169,7 @@ public class ProxyPool implements Processor {
 	}
 
 	/***
-	 * 打开使用过的且评分为10分以上代理连接，并执行，默认延迟0秒
+	 * 打开使用过的且评分为10分以上代理连接，并执行请求，默认延迟0秒
 	 * 
 	 * @param conn
 	 * @return
@@ -180,7 +180,7 @@ public class ProxyPool implements Processor {
 	}
 
 	/***
-	 * 打开代理连接并执行,如原始代理不可用，则使用满足条件的稳定代理
+	 * 打开代理连接并执行请求,如原始代理不可用，则使用满足条件的稳定代理
 	 * 
 	 * @param conn
 	 * @param seepTime
@@ -198,7 +198,7 @@ public class ProxyPool implements Processor {
 	}
 
 	/***
-	 * 打开代理连接并执行，如原始代理不可用，则使用评分>=10的稳定代理，默认延迟0秒
+	 * 打开代理连接并执行请求，如原始代理不可用，则使用评分>=10的稳定代理，默认延迟0秒
 	 * 
 	 * @param conn
 	 * @param randomType
@@ -211,7 +211,7 @@ public class ProxyPool implements Processor {
 	}
 
 	/***
-	 * 打开代理连接并执行，如原始代理不可用，则使用稳定代理，默认延迟0秒
+	 * 打开代理连接并执行请求，如原始代理不可用，则使用稳定代理，默认延迟0秒
 	 * 
 	 * @param conn
 	 * @param score
@@ -225,7 +225,7 @@ public class ProxyPool implements Processor {
 	}
 
 	/**
-	 * 打开代理连接并执行，如原始代理不可用，则使用满足分数条件的稳定代理，默认延迟0秒，使用打乱模式
+	 * 打开代理连接并执行请求，如原始代理不可用，则使用满足分数条件的稳定代理，默认延迟0秒，使用打乱模式
 	 * 
 	 * @param conn
 	 * @return
