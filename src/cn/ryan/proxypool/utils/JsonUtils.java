@@ -1,4 +1,4 @@
-package cn.ryan.utils;
+package cn.ryan.proxypool.utils;
 
 import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -64,4 +64,5 @@ public class JsonUtils {
 			return null;
 		}
 	}
+	
 }

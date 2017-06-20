@@ -1,4 +1,4 @@
-package cn.ryan.proxy;
+package cn.ryan.proxypool.proxy;
 
 import java.io.EOFException;
 import java.io.IOException;
@@ -30,8 +30,8 @@ import cn.ryan.entity.ProxyEntity;
 import cn.ryan.processor.CrawlerSite;
 import cn.ryan.processor.PageProcessor;
 import cn.ryan.processor.Processor;
-import cn.ryan.utils.JsonUtils;
-import cn.ryan.utils.StringUtils;
+import cn.ryan.proxypool.utils.JsonUtils;
+import cn.ryan.proxypool.utils.StringUtils;
 
 public class ProxyPool implements Processor {
 	private CrawlerSite site = CrawlerSite.create()
@@ -297,11 +297,7 @@ public class ProxyPool implements Processor {
 		} else if (randomType == RandomType.RANDOM) {
 			List<EvaluateScoringEntity> list = getUsedIpPoolList(score);
 			if (list.size() > 0) {
-				EvaluateScoringEntity e = list.get(ThreadLocalRandom.current().nextInt(list.size()));// 从满足条件的代理集合中用随机数随机抽取一条代理
-				if (!StringUtils.isNullOrEmpty(e)) {
-					System.out.println(e.getProxyEntity().toString());
-					return e.getProxyEntity();
-				}
+				return list.get(ThreadLocalRandom.current().nextInt(list.size())).getProxyEntity();// 从满足条件的代理集合中用随机数随机抽取一条代理
 			}
 		}
 		return getProxyEntity();

@@ -1,4 +1,4 @@
-package cn.ryan.proxy;
+package cn.ryan.proxypool.proxy;
 
 import java.io.IOException;
 import java.util.List;
@@ -12,7 +12,7 @@ import cn.ryan.entity.EvaluateScoringEntity;
 import cn.ryan.processor.CrawlerSite;
 import cn.ryan.processor.PageProcessor;
 import cn.ryan.processor.Processor;
-import cn.ryan.proxy.ProxyPool.RandomType;
+import cn.ryan.proxypool.proxy.ProxyPool.RandomType;
 
 public class Test implements Processor {
 	private CrawlerSite site = CrawlerSite.create()
@@ -23,13 +23,13 @@ public class Test implements Processor {
 	public static void main(String[] args) throws IOException {
 		ExecutorService exe = Executors.newFixedThreadPool(20);
 
-		for (int i = 0; i < 50; i++) {
+		for (int i = 0; i < 1; i++) {
 			exe.execute(new Runnable() {
 				@Override
 				public void run() {
 					Document doc;
 					try {
-						Response res = ProxyPool.getInstance().openProxyConnection(PageProcessor.create(new Test()).url("http://www.cbec365.com/"), 5);
+						Response res = ProxyPool.getInstance().openProxyConnection(PageProcessor.create(new Test()).url("https://www.baidu.com/s?wd=Java"), 5);
 						if (res == null) {
 							return;
 						}

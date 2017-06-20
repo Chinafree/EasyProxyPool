@@ -1,4 +1,4 @@
-package cn.ryan.utils;
+package cn.ryan.proxypool.utils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -28,5 +28,4 @@ public class StringUtils {
 	public static boolean isNullOrEmpty(Object obj) {
 		return obj == null || obj.equals(null) || obj.equals("null") ? true : false;
 	}
-
 }
