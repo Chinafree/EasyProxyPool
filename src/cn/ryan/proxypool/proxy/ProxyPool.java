@@ -1,14 +1,12 @@
 package cn.ryan.proxypool.proxy;
 
-import java.io.EOFException;
 import java.io.IOException;
 import java.net.InetAddress;
-import java.net.SocketException;
-import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -21,7 +19,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.jsoup.Connection;
 import org.jsoup.Connection.Response;
-import org.jsoup.HttpStatusException;
 import org.jsoup.helper.Validate;
 import org.jsoup.nodes.Document;
 
@@ -37,8 +34,7 @@ public class ProxyPool implements Processor {
 	private CrawlerSite site = CrawlerSite.create()
 			.userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.116 Safari/537.36")
 			.ignoreContentType(true).timeOut(5000);
-
-	private final static String BASE_URL = "#";
+	private final static String BASE_URL = "http://120.131.82.46:8080/ProxyPool/get?anonymity=2&num=50";
 
 	private static ProxyPool instance = null;
 
@@ -77,7 +73,7 @@ public class ProxyPool implements Processor {
 	 * @return
 	 * @throws IOException
 	 */
-	public Response openOriginaProxyConnection(Connection conn) throws IOException {
+	public Response openOriginaProxyConnection(Connection conn) {
 		return openOriginaProxyConnection(conn, 0);
 	}
 
@@ -90,7 +86,7 @@ public class ProxyPool implements Processor {
 	 * @return
 	 * @throws IOException
 	 */
-	public Response openOriginaProxyConnection(Connection conn, long sleepTime) throws IOException {
+	public Response openOriginaProxyConnection(Connection conn, long sleepTime) {
 		Validate.notNull(conn);
 
 		Response res = null;
@@ -99,7 +95,7 @@ public class ProxyPool implements Processor {
 		try {
 			res = conn.proxy(pe.getProxy()).execute();
 			pe.setValid(true);
-		} catch (SocketTimeoutException | SocketException | EOFException | HttpStatusException e) {
+		} catch (IOException e) {
 			pe.setValid(false);
 			removeProxy();
 		} finally {
@@ -124,7 +120,7 @@ public class ProxyPool implements Processor {
 	 * @return
 	 * @throws IOException
 	 */
-	public Response openUsedProxyConnection(Connection conn, int score, RandomType randomType) throws IOException {
+	public Response openUsedProxyConnection(Connection conn, int score, RandomType randomType) {
 		return openUsedProxyConnection(conn, 0, score, randomType);
 	}
 
@@ -141,7 +137,7 @@ public class ProxyPool implements Processor {
 	 * @return
 	 * @throws IOException
 	 */
-	public Response openUsedProxyConnection(Connection conn, long sleepTime, int score, RandomType randomType) throws IOException {
+	public Response openUsedProxyConnection(Connection conn, long sleepTime, int score, RandomType randomType) {
 		Validate.notNull(conn);
 
 		Response res = null;
@@ -154,7 +150,7 @@ public class ProxyPool implements Processor {
 				res = conn.proxy(pe.getProxy()).execute();
 			}
 			pe.setValid(true);
-		} catch (SocketTimeoutException | SocketException | EOFException | HttpStatusException e) {
+		} catch (IOException e) {
 			pe.setValid(false);
 			removeProxy();
 		} finally {
@@ -175,7 +171,7 @@ public class ProxyPool implements Processor {
 	 * @return
 	 * @throws IOException
 	 */
-	public Response openUsedProxyConnection(Connection conn) throws IOException {
+	public Response openUsedProxyConnection(Connection conn) {
 		return openUsedProxyConnection(conn, 0, 10, RandomType.SHUFFLE);
 	}
 
@@ -192,7 +188,7 @@ public class ProxyPool implements Processor {
 	 * @return
 	 * @throws IOException
 	 */
-	public Response openProxyConnection(Connection conn, long seepTime, int score, RandomType randomType) throws IOException {
+	public Response openProxyConnection(Connection conn, long seepTime, int score, RandomType randomType) {
 		Response res = openOriginaProxyConnection(conn, seepTime);
 		return res == null ? openUsedProxyConnection(conn, seepTime, score, randomType) : res;
 	}
@@ -206,7 +202,7 @@ public class ProxyPool implements Processor {
 	 * @return
 	 * @throws IOException
 	 */
-	public Response openProxyConnection(Connection conn, RandomType randomType) throws IOException {
+	public Response openProxyConnection(Connection conn, RandomType randomType) {
 		return openProxyConnection(conn, 0, 10, randomType);
 	}
 
@@ -220,7 +216,7 @@ public class ProxyPool implements Processor {
 	 * @return
 	 * @throws IOException
 	 */
-	public Response openProxyConnection(Connection conn, int score, RandomType randomType) throws IOException {
+	public Response openProxyConnection(Connection conn, int score, RandomType randomType) {
 		return openProxyConnection(conn, 0, score, randomType);
 	}
 
@@ -231,7 +227,7 @@ public class ProxyPool implements Processor {
 	 * @return
 	 * @throws IOException
 	 */
-	public Response openProxyConnection(Connection conn, int score) throws IOException {
+	public Response openProxyConnection(Connection conn, int score) {
 		return openProxyConnection(conn, 0, score, RandomType.SHUFFLE);
 	}
 
@@ -480,7 +476,7 @@ public class ProxyPool implements Processor {
 			exe.execute(new Runnable() {
 				@Override
 				public void run() {
-					System.out.println(ProxyPool.getInstance().getProxy(2));
+					System.out.println(ProxyPool.getInstance().getProxy(0));
 					ProxyPool.getInstance().removeProxy();
 					System.out.println(ProxyPool.getInstance().getOriginalPoolSize());
 				}
@@ -494,20 +490,21 @@ public class ProxyPool implements Processor {
 	 * 
 	 * @return
 	 */
-	private Vector<ProxyEntity> getProxyList() {
-		Map<String, Object> map = new HashMap<>();
+	private synchronized Vector<ProxyEntity> getProxyList() {
 		Vector<ProxyEntity> ipList = new Vector<>();
 		try {
 			Document doc = PageProcessor.create(this).url(BASE_URL).get();
+			Map<String, Object> map = new HashMap<>();
 			map = JsonUtils.getInstance().parse(Map.class, doc.text().toLowerCase());// 将返回的JSON数据转换成对象
-			if (map != null && Integer.parseInt(map.get("code").toString()) == 0) {
-				Map<String, List<String>> data = (Map<String, List<String>>) map.get("data");
-				List<String> list = data.get("proxy_list");// 抽取返回的所有代理
-				for (String s : list) {
-					boolean f = s.matches("(.*?):(.*)");
-					if (f) {// 判断ip合法性
-						String[] arr = s.split(":");
-						ipList.addElement(new ProxyEntity(arr[0], Integer.parseInt(arr[1])));
+			if (map != null && (Integer) map.get("retcode") == 100) {
+				List<Object> data = (List<Object>) map.get("data");
+				for (Object o : data) {
+					if (o instanceof LinkedHashMap) {
+						String ip = ((LinkedHashMap) o).get("ip").toString();
+						String port = ((LinkedHashMap) o).get("prot").toString();
+						if ((ip + ":" + port).matches("(.*?):(.*)")) {
+							ipList.add(new ProxyEntity(ip, Integer.parseInt(port)));
+						}
 					}
 				}
 			}
