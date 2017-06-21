@@ -61,7 +61,9 @@ public class ProxyPool implements Processor {
 	private void setCache() {
 		if (getOriginalPoolSize() <= 0) {
 			synchronized (this) {
-				getProxyList(true);
+				if (getOriginalPoolSize() <= 0) {
+					getProxyList(true);
+				}
 			}
 		}
 	}
@@ -481,7 +483,7 @@ public class ProxyPool implements Processor {
 					System.out.println(ProxyPool.getInstance().getOriginalPoolSize());
 				}
 			});
-			TimeUnit.MILLISECONDS.sleep(10);
+			TimeUnit.MILLISECONDS.sleep(100);
 		}
 	}
 
@@ -490,7 +492,7 @@ public class ProxyPool implements Processor {
 	 * 
 	 * @return
 	 */
-	private synchronized Vector<ProxyEntity> getProxyList() {
+	private Vector<ProxyEntity> getProxyList() {
 		Vector<ProxyEntity> ipList = new Vector<>();
 		try {
 			Document doc = PageProcessor.create(this).url(BASE_URL).get();
@@ -518,7 +520,7 @@ public class ProxyPool implements Processor {
 	 * API请求
 	 * 
 	 * @param ignoreExceptions
-	 *            是否忽略异常，如为True则请求到非异常为止（不推荐，除非业务需要，或加错误计数器用以停止），反之则只请求一次
+	 *            是否忽略一切异常，如为True则请求到非异常为止，反之则只请求一次
 	 * @return
 	 * @throws InterruptedException
 	 */
