@@ -503,7 +503,7 @@ public class ProxyPool implements Processor {
 				for (Object o : data) {
 					if (o instanceof LinkedHashMap) {
 						String ip = ((LinkedHashMap) o).get("ip").toString();
-						String port = ((LinkedHashMap) o).get("prot").toString();
+						String port = ((LinkedHashMap) o).get("port").toString();
 						if ((ip + ":" + port).matches("(.*?):(.*)")) {
 							ipList.add(new ProxyEntity(ip, Integer.parseInt(port)));
 						}
@@ -545,7 +545,6 @@ public class ProxyPool implements Processor {
 	/***
 	 * Ping 轻验证
 	 * 
-	 * @param proxy
 	 * @return
 	 */
 	private boolean ping() {
